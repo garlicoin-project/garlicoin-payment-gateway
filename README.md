@@ -1,11 +1,32 @@
-Plan:
+Garlicoin Payment Gateway
+=========================
 
-- Make Plan
-- Determine API
-- Write code
+Client/Gateway transaction process
+----------------------------------
+
+Client requests payment destination:
+`https://grlc.cash?g={gatewayUserID}&a={grlcAmount}&u={clientUserID}&o={clientOrderID}`
+
+GRLC Gateway responds:
+`{"uuid": "unique-id-for-transaction", "grlc_amt_str": "exactly 12.345 GRLC", "pmt_address": "Garlic1234"}`
+
+GRLC Gateway forwards funds to user:
+`amount * (1 - fee) send to wallet address from user record`
+
+GRLC Gateway sends notice to user:
+`{clientCallbackUrl}: {"user_id": {clientUserID}, "order_id": {clientOrderID}, "amount": {amountReceived}, }`
+
+Client requests status update:
+`https://grlc.cash/status/{uuid}`
+    
+GRLC Gateway responds:
+`{"status": "waiting/expired/received", "uuid": "{uuid}"}`
+
 
 Notes:
+------
 
-- exchange rate: https://api.coinmarketcap.com/v1/ticker/garlicoin/
 - use address indexes from https://github.com/garlicoin-project/garlicore-garlicoin
-- sample api? : https://gourl.io/api.html
+- need a database to store user records and wallet transactions
+- need to generate wallet addresses and monitor receipts
+- need to sign and send transactions
