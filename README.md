@@ -5,7 +5,7 @@ Client/Gateway transaction process
 ----------------------------------
 
 Client requests payment destination:
-`https://grlc.cash?g={gatewayUserID}&a={grlcAmount}&u={clientUserID}&o={clientOrderID}`
+`https://grlc.cash/request?g={gatewayUserID}&a={grlcAmount}&u={clientUserID}&o={clientOrderID}`
 
 GRLC Gateway responds:
 `{"uuid": "unique-id-for-transaction", "grlc_amt_str": "exactly 12.345 GRLC", "pmt_address": "Garlic1234"}`
