@@ -27,6 +27,3 @@ Notes:
 ------
 
 - use address indexes from https://github.com/garlicoin-project/garlicore-garlicoin
-- need a database to store user records and wallet transactions
-- need to generate wallet addresses and monitor receipts
-- need to sign and send transactions
