@@ -1,6 +1,8 @@
-from sqlalchemy import engine_from_config, Column, String
+from datetime import datetime
+from sqlalchemy import engine_from_config, Column, String, ForeignKey, Numeric, Boolean, DateTime
 import sqlalchemy.ext.declarative as dec
 import sqlalchemy.orm
+from uuid import uuid4
 
 Base = dec.declarative_base()
 
@@ -8,7 +10,41 @@ Base = dec.declarative_base()
 class User(Base):
     __tablename__ = 'User'
 
-    id = Column(String, primary_key=True)
+    id = Column(String, primary_key=True, default=uuid4)
+    email = Column(String)
+    grlc_address = Column(String)
+    created = Column(DateTime, default=datetime.now)
+    validated = Column(Boolean)
+
+    transactions = sqlalchemy.orm.relationship('Transaction', back_populates='user')
+
+
+class Transaction(Base):
+    __tablename__ = 'Transaction'
+
+    id = Column(String, primary_key=True, default=uuid4)
+    payment_address = Column(String, ForeignKey('Address.address'))
+    payment_amount = Column(Numeric)
+    payment_amount_string = Column(String)
+    user_id = Column(String, ForeignKey(column='User.id'), nullable=False)
+    opened = Column(DateTime, default=datetime.now)
+    received = Column(DateTime)
+    status = Column(String)
+
+    user = sqlalchemy.orm.relationship('User', back_populates='transactions')
+    address = sqlalchemy.orm.relationship('Address', back_populates='transactions')
+
+
+class Address(Base):
+    __tablename__ = 'Address'
+
+    address = Column(String, primary_key=True)
+    created = Column(DateTime, default=datetime.now)
+    last_used = Column(DateTime)
+    balance_date = Column(DateTime)
+    balance = Column(Numeric)
+
+    transactions = sqlalchemy.orm.relationship('Transaction', back_populates='address')
 
 
 class DbSessionFactory:

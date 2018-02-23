@@ -5,7 +5,7 @@ Client/Gateway transaction process
 ----------------------------------
 
 Client requests payment destination:
-`https://grlc.cash/request?g={gatewayUserID}&a={grlcAmount}&u={clientUserID}&o={clientOrderID}`
+`POST https://grlc.cash/gateway?g={gatewayUserID}&a={grlcAmount}&u={clientUserID}&o={clientOrderID}`
 
 GRLC Gateway responds:
 `{"uuid": "unique-id-for-transaction", "grlc_amt_str": "exactly 12.345 GRLC", "pmt_address": "Garlic1234"}`
@@ -17,7 +17,7 @@ GRLC Gateway sends notice to user:
 `{clientCallbackUrl}: {"user_id": {clientUserID}, "order_id": {clientOrderID}, "amount": {amountReceived}, }`
 
 Client requests status update:
-`https://grlc.cash/status/{uuid}`
+`GET https://grlc.cash/gateway?i={uuid}`
     
 GRLC Gateway responds:
 `{"status": "waiting/expired/received", "uuid": "{uuid}"}`
