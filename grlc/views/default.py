@@ -4,7 +4,7 @@ from pyramid.view import view_config
 
 @view_config(route_name='home')
 def home_view(request):
-    return Response(418)
+    return Response(status=418)
 
 
 @view_config(route_name='request', renderer='json')

@@ -8,7 +8,7 @@ Base = dec.declarative_base()
 class User(Base):
     __tablename__ = 'User'
 
-    id = Column(String)
+    id = Column(String, primary_key=True)
 
 
 class DbSessionFactory:
