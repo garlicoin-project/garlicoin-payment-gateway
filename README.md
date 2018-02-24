@@ -21,9 +21,3 @@ Client requests status update:
     
 GRLC Gateway responds:
 `{"status": "waiting/expired/received", "uuid": "{uuid}"}`
-
-
-Notes:
-------
-
-- use address indexes from https://github.com/garlicoin-project/garlicore-garlicoin

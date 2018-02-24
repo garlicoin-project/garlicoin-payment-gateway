@@ -1,8 +1,8 @@
 from decimal import Decimal
-import logging
+from grlc.services.log_service import LogService
 import requests
 
-logger = logging.getLogger(__name__)
+logger = LogService.logger
 
 
 class Garlicoin:

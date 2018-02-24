@@ -1,3 +1,6 @@
+from datetime import datetime
+from decimal import Decimal
+from grlc.services.database import DbSession, Transaction, User, Address
 from pyramid.view import view_defaults
 from pyramid.response import Response
 
@@ -19,33 +22,66 @@ class GatewayView(object):
     def get(self):
         transaction_id = self.request.matchdict.get('i')
 
-        # TODO: Validate ID / get transaction
-        status = 'testing'
+        if not transaction_id or len(transaction_id) != 36:
+            return Response(status=400)  # bad request
 
-        return Response(json_body={
-            'status': status,
-            'uuid': transaction_id})
+        with DbSession() as s:
+            transaction = s.query(Transaction).filter_by(id=transaction_id).one_or_none()
+            if transaction is None:
+                return Response(status=404)  # not found
+
+            return Response(json_body={
+                'status': transaction.status,
+                'uuid': transaction_id,
+            }, status=200)
 
     def post(self):
         gateway_user_id = self.request.matchdict.get('g')
-        garlic_amount = self.request.matchdict.get('a')
-        client_user_id = self.request.matchdict.get('u', '')
-        client_order_id = self.request.matchdict.get('o', '')
+        garlic_amount = _to_decimal(self.request.matchdict.get('a'))
+        client_user_id = self.request.matchdict.get('u')
+        client_order_id = self.request.matchdict.get('o')
 
-        # TODO: Validate user (gateway_user_id)
+        if (
+            not gateway_user_id or len(gateway_user_id) != 36 or
+            not garlic_amount or garlic_amount < 0 or
+            client_user_id is None or client_order_id is None
+        ):
+            return Response(status=400)  # bad request
 
-        # TODO: Validate GRLC amount (number greater than zero)
+        with DbSession() as s:
+            user = s.query(User).filter_by(id=gateway_user_id).one_or_none()
+            if user is None:
+                return Response(satus=401)  # unauthorized
 
-        # TODO: Generate receiving address for transaction
-        payment_address = 'Garlic1234'
+            # TODO: Generate receiving address for transaction
+            payment_address = 'Garlic1234'
 
-        # TODO: Create transaction record
-        transaction_id = 'uuid-transaction-id'
+            transaction = Transaction(
+                payment_address=payment_address,
+                payment_amount=garlic_amount,
+                payment_amount_string=f'exactly {garlic_amount:.8f} GRLC',
+                user_id=user.id,
+                status='waiting',
+            )
+            s.add(transaction)
+            s.commit()
 
-        return Response(json_body={
-            'uuid': transaction_id,
-            'grlc_amt_str': 'exactly 12.345 GRLC',
-            'pmt_address': payment_address},
-            status=201,
-            location=f'/gateway?i={transaction_id}',
-        )
+            return Response(json_body={
+                'uuid': transaction.id,
+                'grlc_amt_str': transaction.payment_amount_string,
+                'pmt_address': payment_address,
+            },
+                status=201,  # created
+                location=f'/gateway?i={transaction.id}',
+            )
+
+
+def _to_decimal(value: str):
+    """Return a Decimal object if given a well-formed GRLC amount string, otherwise return 0"""
+    try:
+        d = Decimal(value)
+        if d.as_tuple().exponent < -8:
+            d = 0
+    except (ArithmeticError, TypeError):
+        d = 0
+    return d
