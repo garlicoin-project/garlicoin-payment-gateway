@@ -5,6 +5,7 @@ requires = [
     'waitress',
     'sqlalchemy',
     'psycopg2',
+    'requests',
     'pyqrcode',
 ]
 
