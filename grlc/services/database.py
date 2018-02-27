@@ -42,7 +42,7 @@ class Address(Base):
 
     address = Column(String, primary_key=True)
     created = Column(DateTime, default=datetime.now)
-    last_used = Column(DateTime)
+    last_used = Column(DateTime, default=datetime.now)
     balance_date = Column(DateTime)
     balance = Column(Numeric)
 

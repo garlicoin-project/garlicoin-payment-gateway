@@ -51,4 +51,7 @@ class Garlicoin:
 
     def getnewaddress(self):
         """Return a new address for receiving payments"""
-        return self._post('getnewaddress', None)
+        response = self._post('getnewaddress', None)
+        address = response['result']
+        if address[0] == 'G' and len(address) == 34:
+            return address
