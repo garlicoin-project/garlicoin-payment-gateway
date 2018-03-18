@@ -10,9 +10,10 @@ class Garlicoin:
     rpc_password = 'test'
     rpc_id = 0
 
-    def global_init(self, credentials: dict):
-        self.rpc_username = credentials['username']
-        self.rpc_password = credentials['password']
+    @classmethod
+    def global_init(cls, credentials: dict):
+        cls.rpc_username = credentials['username']
+        cls.rpc_password = credentials['password']
 
     def _post(self, method: str, params: list=None):
         url = f'http://{self.rpc_username}:{self.rpc_password}@localhost:42068'
@@ -33,8 +34,29 @@ class Garlicoin:
         """Return highest block # in local copy of blockchain"""
         return self._post('getblockcount')
 
-    def listtransactions(self, address: str, count: int=10, skip: int=0):
-        """Return most recent [count] transactions skipping first [skip] for [address]"""
+    def listtransactions(self, address: str='', count: int=10, skip: int=0):
+        """Return most recent [count] transactions skipping first [skip] for [address]
+
+        Returns a list of dictionaries with, for example:
+            {'account': '',
+             'address': 'GeMo9tJxQLfipPjeY1SdBJAgkQPpXf4EZm',
+             'category': 'receive',  # 'send'
+             'amount': 0.01753841,  # -0.01234567 for send
+             'label': '',  # not used for send
+             'vout': 237,
+             # 'fee': -0.0033,  # send only
+             'confirmations': 24100,
+             'blockhash': '10c49c32be907a7c8f4330ff8250285dafb86edfb4f35f76d5781685f02d3573',
+             'blockindex': 4,
+             'blocktime': 1519291852,
+             'txid': '6f42f052e4bb3f521b40e4e7895d0ac1bfa4c268646616ae13eae613efaabf18',
+             'walletconflicts': [],
+             'time': 1519291852,
+             'timereceived': 1519485123,
+             'bip125-replaceable': 'no',
+             # 'abandoned': False,  # send only
+             },
+        """
         return self._post('listtransactions', [address, count, skip])
 
     def gettransaction(self, txid: str):

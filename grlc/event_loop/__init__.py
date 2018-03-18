@@ -1,5 +1,9 @@
+from grlc.services.garlicoin import Garlicoin
+
+
 def main():
-    pass
+    g = Garlicoin()
+
     # TODO: Get wallet balances, transactions
     # TODO: Update transaction records
     # TODO: Send record to user

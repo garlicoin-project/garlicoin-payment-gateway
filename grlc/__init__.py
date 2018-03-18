@@ -8,5 +8,9 @@ def main(_, **settings):
     config.include('.services.log_service')
     config.include('.services.database')
     config.include('.routes')
-    Garlicoin.global_init(credentials=json.load(open('credentials.json')))
+    try:
+        credentials = json.load(open('credentials.json'))
+    except FileNotFoundError:
+        credentials = {'username': 'test', 'password': 'test'}
+    Garlicoin.global_init(credentials=credentials)
     return config.make_wsgi_app()
